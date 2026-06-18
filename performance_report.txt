@@ -1,0 +1,90 @@
+================================================================================
+DIJKSTRA'S ALGORITHM - PERFORMANCE ANALYSIS REPORT
+================================================================================
+
+Generated: 2026-06-12T19:54:16.528639
+
+Database Statistics:
+  - Total Nodes: 5000
+  - Total Edges: 17519
+  - Computed Paths: 0
+
+================================================================================
+PERFORMANCE METRICS BY CONFIGURATION
+================================================================================
+
+SEQUENTIAL:
+----------------------------------------
+  Total Tests Run: 20
+  Average Execution Time: 15.7650 ms
+  Min Execution Time: 2.6059 ms
+  Max Execution Time: 47.9417 ms
+  Standard Deviation: 9.5332 ms
+  Successful Paths: 20/20
+  Average Path Distance: 262.87
+
+PARALLEL_1T:
+----------------------------------------
+  Total Tests Run: 20
+  Average Execution Time: 43.9000 ms
+  Min Execution Time: 4.0000 ms
+  Max Execution Time: 73.0000 ms
+  Standard Deviation: 21.1658 ms
+  Successful Paths: 18/20
+  Average Path Distance: 275.91
+
+PARALLEL_2T:
+----------------------------------------
+  Total Tests Run: 20
+  Average Execution Time: 95.7500 ms
+  Min Execution Time: 3.0000 ms
+  Max Execution Time: 176.0000 ms
+  Standard Deviation: 56.0088 ms
+  Successful Paths: 20/20
+  Average Path Distance: 247.02
+
+PARALLEL_4T:
+----------------------------------------
+  Total Tests Run: 20
+  Average Execution Time: 204.5000 ms
+  Min Execution Time: 40.0000 ms
+  Max Execution Time: 395.0000 ms
+  Standard Deviation: 104.9226 ms
+  Successful Paths: 19/20
+  Average Path Distance: 261.95
+
+================================================================================
+SPEEDUP AND EFFICIENCY ANALYSIS
+================================================================================
+
+PARALLEL_1T:
+  Speedup (vs Sequential): 0.36x
+  Parallel Efficiency: 35.91%
+  Time Improvement: -178.47%
+
+PARALLEL_2T:
+  Speedup (vs Sequential): 0.16x
+  Parallel Efficiency: 8.23%
+  Time Improvement: -507.36%
+
+PARALLEL_4T:
+  Speedup (vs Sequential): 0.08x
+  Parallel Efficiency: 1.93%
+  Time Improvement: -1197.18%
+
+================================================================================
+CONCLUSIONS AND RECOMMENDATIONS
+================================================================================
+
+1. Performance Observations:
+   - Sequential implementation provides baseline performance
+   - Parallel implementations show varying efficiency levels
+
+2. Scalability Analysis:
+   - Review speedup vs thread count for optimal performance
+   - Check for diminishing returns with increased threads
+
+3. Recommendations:
+   - For small graphs: Sequential implementation may be optimal
+   - For large graphs: Use parallel with 4-8 threads (adjust per hardware)
+   - Consider overhead vs. gain when choosing thread count

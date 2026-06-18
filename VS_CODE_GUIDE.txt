@@ -1,0 +1,163 @@
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║              VS CODE - SETUP & RUN GUIDE                      ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════
+
+⚠️ IMPORTANT: DO NOT USE THE "RUN" BUTTON IN VS CODE!
+
+   The play button (▶) in the top right can cause errors.
+   We will use the Terminal instead.
+
+═══════════════════════════════════════════════════════════════════
+
+✅ STEP 1: OPEN FOLDER IN VS CODE
+
+1. Open VS Code
+2. Click: File → Open Folder
+3. Select this folder (dijkstra_complete)
+4. Click "Select Folder"
+
+You should see all files on the left side in the Explorer panel.
+
+═══════════════════════════════════════════════════════════════════
+
+✅ STEP 2: OPEN TERMINAL IN VS CODE
+
+Method A (Keyboard Shortcut):
+   Press: Ctrl + ` (backtick key - usually below Esc)
+
+Method B (Menu):
+   Click: Terminal → New Terminal
+
+You should see a terminal window at the bottom of VS Code.
+
+═══════════════════════════════════════════════════════════════════
+
+✅ STEP 3: INSTALL DEPENDENCIES
+
+In the terminal, type:
+   pip install -r requirements.txt
+
+Press Enter and wait 2-3 minutes for installation to complete.
+
+You should see:
+   Successfully installed numpy pandas networkx matplotlib
+
+═══════════════════════════════════════════════════════════════════
+
+✅ STEP 4: RUN THE APPLICATION
+
+In the terminal, type:
+   python main.py
+
+Press Enter.
+
+You should see the menu:
+   ============================================================
+   DIJKSTRA'S ALGORITHM WITH PARALLEL PROCESSING
+   ============================================================
+
+   1. Setup/Initialize Database
+   2. Find Shortest Path
+   3. Run Performance Analysis
+   4. View Database Statistics
+   5. Exit
+
+   Select option (1-5):
+
+═══════════════════════════════════════════════════════════════════
+
+✅ STEP 5: FOLLOW THE MENU
+
+Type 1 and press Enter:
+   → Initialize database (creates 5000 nodes)
+
+Wait 30-60 seconds...
+
+Type 2 and press Enter:
+   → Find shortest path
+   → Enter source: 100
+   → Enter destination: 2500
+   → Choose algorithm: 1 (Sequential)
+
+See your results!
+
+═══════════════════════════════════════════════════════════════════
+
+🎯 COMMON COMMANDS IN TERMINAL:
+
+Navigate to folder:
+   cd C:\Users\YourName\Desktop\dijkstra_complete
+
+List files:
+   dir (Windows)  or  ls (Mac/Linux)
+
+Install dependencies:
+   pip install -r requirements.txt
+
+Run application:
+   python main.py
+
+Stop application:
+   Ctrl + C
+
+═══════════════════════════════════════════════════════════════════
+
+🚫 ERRORS & FIXES:
+
+Error: "Cannot read properties of undefined (reading 'bind')"
+   FIX: You're using the Run button (play button)
+   SOLUTION: Use Terminal instead (Ctrl + `)
+
+Error: "ModuleNotFoundError: No module named 'xyz'"
+   FIX: Dependencies not installed
+   SOLUTION: Run: pip install -r requirements.txt
+
+Error: "Python not found"
+   FIX: Python not installed or not in PATH
+   SOLUTION: Install Python from python.org
+            Check "Add Python to PATH" during installation
+
+Error: Database takes forever
+   FIX: Normal on first run
+   SOLUTION: Wait 1-2 minutes, don't close terminal
+
+═══════════════════════════════════════════════════════════════════
+
+✅ VERIFICATION: DID IT WORK?
+
+You should see:
+   ✓ Terminal opens without error
+   ✓ Dependencies install successfully
+   ✓ Application menu appears
+   ✓ Can enter option numbers
+   ✓ Database initializes
+   ✓ Can find shortest paths
+   ✓ Performance analysis works
+
+═══════════════════════════════════════════════════════════════════
+
+💡 TIPS:
+
+1. Always use Terminal, never the Run button
+2. First run takes longer (database creation)
+3. Subsequent runs are much faster
+4. You can run the app multiple times
+5. Results are saved in graph_data.db
+
+═══════════════════════════════════════════════════════════════════
+
+Ready? Follow these steps:
+
+1. File → Open Folder (select this folder)
+2. Ctrl + ` (open terminal)
+3. pip install -r requirements.txt (install dependencies)
+4. python main.py (run application)
+5. Follow the menu
+
+Good luck! 🚀
+
+═══════════════════════════════════════════════════════════════════

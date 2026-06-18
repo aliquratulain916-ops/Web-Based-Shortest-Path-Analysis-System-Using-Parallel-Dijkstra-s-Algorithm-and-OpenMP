@@ -1,0 +1,205 @@
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║     DIJKSTRA'S SHORTEST PATH - PARALLEL IMPLEMENTATION        ║
+║                                                                ║
+║                   🚀 STARTUP GUIDE 🚀                         ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════
+
+🎯 WHAT YOU HAVE:
+
+✓ Complete Python Project
+✓ SQLite Database (5,000+ nodes)
+✓ Dijkstra's Algorithm (Sequential & Parallel)
+✓ Performance Analysis Tools
+✓ Interactive Menu System
+
+═══════════════════════════════════════════════════════════════════
+
+⚡ QUICK START (3 STEPS):
+
+Step 1: Double-click the file for YOUR system:
+   • Windows → RUN_ME_FIRST.bat
+   • Mac/Linux → RUN_ME_FIRST.sh
+
+Step 2: Wait for setup to complete (2-3 minutes first time)
+
+Step 3: Follow the menu in the terminal window
+
+Done! 🎉
+
+═══════════════════════════════════════════════════════════════════
+
+📋 WHAT HAPPENS NEXT:
+
+When you run RUN_ME_FIRST, the system will:
+
+1. Check if Python is installed ✓
+2. Install required libraries (numpy, pandas, etc.)
+3. Start the application automatically
+4. Show you this menu:
+
+   ============================================================
+   DIJKSTRA'S SHORTEST PATH - PARALLEL IMPLEMENTATION
+   ============================================================
+
+   1. Setup/Initialize Database
+   2. Find Shortest Path
+   3. Run Performance Analysis
+   4. View Database Statistics
+   5. Exit
+
+   Select option (1-5):
+
+═══════════════════════════════════════════════════════════════════
+
+🎮 MENU OPTIONS EXPLAINED:
+
+Option 1: Setup/Initialize Database
+   → Creates 5,000 nodes and 25,000+ edges
+   → Takes 30-60 seconds first time
+   → Creates file: graph_data.db
+   → RUN THIS FIRST!
+
+Option 2: Find Shortest Path
+   → Enter two node IDs (1-5000)
+   → Choose Sequential or Parallel algorithm
+   → See results with path and distance
+   → Example: Find path from Node 100 to Node 2500
+
+Option 3: Run Performance Analysis
+   → Tests both sequential and parallel
+   → Creates: performance_report.txt
+   → Creates: performance_data.csv
+   → Shows speedup metrics
+   → Takes 2-5 minutes
+
+Option 4: View Database Statistics
+   → Shows total nodes, edges, paths
+   → Shows connectivity metrics
+
+Option 5: Exit
+   → Close the application
+
+═══════════════════════════════════════════════════════════════════
+
+📊 RECOMMENDED WORKFLOW:
+
+1st Run:
+   a) Select Option 1 (setup database)
+   b) Wait for completion
+   c) Select Option 2 (find shortest path)
+   d) Enter: Source=100, Destination=2500
+   e) Try both Sequential and Parallel
+   f) Exit
+
+2nd Run:
+   a) Open and run again
+   b) Select Option 3 (performance analysis)
+   c) Enter: 20 test cases
+   d) Wait for analysis
+   e) Open performance_report.txt to see results
+
+═══════════════════════════════════════════════════════════════════
+
+📁 FILES IN THIS FOLDER:
+
+STARTUP:
+   • RUN_ME_FIRST.bat  ← Click this on Windows
+   • RUN_ME_FIRST.sh   ← Run this on Mac/Linux
+   • STARTUP.txt       ← This file
+
+CODE:
+   • main.py           ← Main application
+   • database.py       ← Database management
+   • dijkstra.py       ← Algorithm implementation
+   • performance.py    ← Benchmarking tools
+   • requirements.txt  ← Python dependencies
+
+DOCUMENTATION:
+   • README.md         ← Full documentation
+   • QUICKSTART.md     ← Quick guide
+   • ARCHITECTURE.md   ← Technical details
+
+GENERATED (after first run):
+   • graph_data.db     ← SQLite database (auto-created)
+   • performance_report.txt (after Option 3)
+   • performance_data.csv (after Option 3)
+
+═══════════════════════════════════════════════════════════════════
+
+❓ TROUBLESHOOTING:
+
+Problem: "Python not found"
+Solution: Install Python from python.org
+          Check "Add Python to PATH"
+
+Problem: File doesn't open with double-click
+Solution: Right-click the file
+          Select "Open with" → Command Prompt (Windows)
+          Or open Terminal and drag the file into it
+
+Problem: Takes forever on first run
+Solution: Normal! Database generation takes 30-60 seconds
+          Be patient, don't close the window
+
+Problem: "Permission denied" on Mac/Linux
+Solution: Right-click RUN_ME_FIRST.sh
+          Select "Get Info"
+          Check "Execute"
+          OR in Terminal: chmod +x RUN_ME_FIRST.sh
+
+═══════════════════════════════════════════════════════════════════
+
+✅ VERIFICATION CHECKLIST:
+
+After first run, you should see:
+□ No error messages
+□ Menu appears (Select option 1-5)
+□ Database initializes (5000 nodes)
+□ Can find shortest paths
+□ Can run performance analysis
+□ Files created: graph_data.db
+
+═══════════════════════════════════════════════════════════════════
+
+🆘 IF SOMETHING BREAKS:
+
+1. Delete graph_data.db file
+2. Run RUN_ME_FIRST again
+3. Select Option 1 to reinitialize
+
+OR
+
+1. Open Terminal/Command Prompt
+2. Navigate to this folder
+3. Type: python main.py
+4. Follow the menu
+
+═══════════════════════════════════════════════════════════════════
+
+📞 NEED HELP?
+
+1. Check README.md for detailed info
+2. Check QUICKSTART.md for step-by-step guide
+3. Check ARCHITECTURE.md for technical details
+
+═══════════════════════════════════════════════════════════════════
+
+🎯 YOU'RE READY!
+
+Ready to start?
+
+Windows Users:
+   → Double-click RUN_ME_FIRST.bat
+
+Mac/Linux Users:
+   → Open Terminal
+   → Drag RUN_ME_FIRST.sh into Terminal
+   → Press Enter
+
+Good luck! 🚀
+
+═══════════════════════════════════════════════════════════════════

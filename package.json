@@ -1,0 +1,10 @@
+{
+  "name": "dijkstra-complete-root",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm install --no-audit --prefer-offline && npm run build"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
