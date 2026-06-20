@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dijkstra Shortest-Path System — Project Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1220;
+    --panel:#121b2c;
+    --panel-2:#162134;
+    --border:#26334a;
+    --text:#e7ecf3;
+    --muted:#8b96ac;
+    --accent:#ffb454;   /* shortest path */
+    --accent-2:#4fd1c5; /* visited / explored */
+    --accent-2-dim: rgba(79,209,197,.18);
+    --accent-dim: rgba(255,180,84,.16);
+    --radius:14px;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:4px;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  img,svg{display:block; max-width:100%;}
+
+  /* ---------- NAV ---------- */
+  header.site{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,18,32,.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-family:'Space Grotesk'; font-weight:600; font-size:17px;}
+  .brand .dot{width:9px; height:9px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 3px var(--accent-dim);}
+  .navlinks{display:flex; gap:28px; font-size:14px; color:var(--muted);}
+  .navlinks a{text-decoration:none; transition:color .15s;}
+  .navlinks a:hover{color:var(--text);}
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    padding:10px 16px;
+    border-radius:8px;
+    text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--border);
+    transition:border-color .15s, background .15s, transform .15s;
+  }
+  .btn-primary{background:var(--accent); color:#1a1305; border-color:var(--accent); font-weight:500;}
+  .btn-primary:hover{transform:translateY(-1px);}
+  .btn-ghost{color:var(--text); background:transparent;}
+  .btn-ghost:hover{border-color:var(--accent-2); color:var(--accent-2);}
+  @media (max-width:760px){ .navlinks{display:none;} }
+
+  /* ---------- SPINE / NODE NUMBERING ---------- */
+  .section{position:relative; padding:90px 0 0;}
+  .section-head{
+    display:flex; align-items:center; gap:14px;
+    margin-bottom:36px;
+  }
+  .node-id{
+    width:34px; height:34px; min-width:34px;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:var(--panel);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono'; font-size:12px; color:var(--accent-2);
+  }
+  .edge-rule{flex:1; height:1px; background:linear-gradient(90deg, var(--border), transparent);}
+  .section-head h2{font-size:26px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--accent-2);
+    letter-spacing:.06em;
+    text-transform:lowercase;
+    margin:0 0 12px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{padding:64px 0 40px;}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+  .hero h1{font-size:48px; line-height:1.08; font-weight:700;}
+  .hero h1 span{color:var(--accent);}
+  .hero p.lead{color:var(--muted); font-size:17px; max-width:480px; margin:18px 0 28px;}
+  .hero-ctas{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:34px;}
+  .stat-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .stat-chip{
+    border:1px solid var(--border); background:var(--panel);
+    border-radius:8px; padding:8px 12px;
+    font-family:'IBM Plex Mono'; font-size:12.5px; color:var(--muted);
+  }
+  .stat-chip b{color:var(--text); font-weight:500;}
+
+  .graph-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; position:relative;
+  }
+  .graph-card .cap{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'IBM Plex Mono'; font-size:11.5px; color:var(--muted); margin-bottom:8px;
+  }
+  .legend{display:flex; gap:14px; font-size:11px;}
+  .legend i{width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:5px; vertical-align:middle;}
+  .legend .l-visited{background:var(--accent-2);}
+  .legend .l-path{background:var(--accent);}
+
+  /* graph svg styling */
+  #graphSvg .edge{stroke:#2c3a54; stroke-width:1.6; fill:none;}
+  #graphSvg .weight-bg{fill:var(--panel); stroke:#2c3a54; stroke-width:1;}
+  #graphSvg .weight-txt{fill:var(--muted); font-family:'IBM Plex Mono'; font-size:9px; text-anchor:middle; dominant-baseline:middle;}
+  #graphSvg .node-circle{fill:#16213d; stroke:#3a4a68; stroke-width:1.4;}
+  #graphSvg .node-txt{fill:var(--text); font-family:'IBM Plex Mono'; font-size:10px; text-anchor:middle; dominant-baseline:middle;}
+  #graphSvg .ring{fill:none; stroke:var(--accent-2); stroke-width:2; opacity:0; transform-origin:center; transform-box:fill-box;}
+  #graphSvg .path-edge{stroke:var(--accent); stroke-width:0; fill:none; filter:drop-shadow(0 0 4px rgba(255,180,84,.55));}
+  #graphSvg .path-node circle.node-circle{transition:fill .3s, stroke .3s;}
+
+  @keyframes pulseRing{
+    0%{opacity:0; transform:scale(.6);}
+    20%{opacity:.9; transform:scale(1.5);}
+    55%{opacity:0; transform:scale(2.1);}
+    100%{opacity:0; transform:scale(2.1);}
+  }
+  @keyframes pathNodeOn{
+    0%,48%{fill:#16213d; stroke:#3a4a68;}
+    55%,90%{fill:var(--accent); stroke:var(--accent);}
+    100%{fill:#16213d; stroke:#3a4a68;}
+  }
+  @media (prefers-reduced-motion: no-preference){
+    #graphSvg .ring{animation:pulseRing 7s ease-out infinite;}
+    #graphSvg .path-node circle.node-circle{animation:pathNodeOn 7s ease-in-out infinite;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    #graphSvg .path-node circle.node-circle{fill:var(--accent); stroke:var(--accent);}
+    #graphSvg .path-edge{stroke-dashoffset:0 !important;}
+  }
+
+  /* ---------- OVERVIEW FEATURES ---------- */
+  .feat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media (max-width:800px){ .feat-grid{grid-template-columns:1fr;} }
+  .feat{
+    border:1px solid var(--border); background:var(--panel);
+    border-radius:var(--radius); padding:22px;
+  }
+  .feat .ico{width:30px; height:30px; margin-bottom:14px; color:var(--accent-2);}
+  .feat h3{font-size:16px; margin-bottom:8px;}
+  .feat p{color:var(--muted); font-size:14.5px; margin:0;}
+
+  /* ---------- ARCHITECTURE ---------- */
+  .arch-stack{display:flex; flex-direction:column; gap:0; max-width:760px; margin:0 auto;}
+  .arch-band{
+    border:1px solid var(--border); background:var(--panel);
+    border-radius:10px; padding:16px 20px;
+    font-family:'IBM Plex Mono'; font-size:13px; color:var(--text);
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+  }
+  .arch-band .lbl{color:var(--muted); font-size:11px;}
+  .arch-connector{width:1px; height:26px; background:var(--border); margin:0 auto;}
+  .arch-fork{display:flex; gap:14px; margin:0 auto; width:100%;}
+  .arch-fork .arch-band{flex:1;}
+  .arch-fork .arch-band.alt{border-color:#3a4a68;}
+  .arch-fork .arch-band.alt .lbl{color:var(--accent-2);}
+
+  /* ---------- TECH STACK ---------- */
+  .stack-groups{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+  @media (max-width:900px){ .stack-groups{grid-template-columns:repeat(2,1fr);} }
+  .stack-group h4{font-size:12px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 12px; font-family:'IBM Plex Mono'; font-weight:400;}
+  .chip{
+    display:inline-block; font-family:'IBM Plex Mono'; font-size:12.5px;
+    border:1px solid var(--border); border-radius:7px; padding:6px 10px;
+    margin:0 6px 8px 0; color:var(--text); background:var(--panel-2);
+  }
+
+  /* ---------- MODULES ---------- */
+  .mod-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  @media (max-width:800px){ .mod-grid{grid-template-columns:1fr;} }
+  .mod-card{border:1px solid var(--border); background:var(--panel); border-radius:var(--radius); padding:20px;}
+  .mod-card .fname{font-family:'IBM Plex Mono'; color:var(--accent-2); font-size:14px; margin-bottom:6px;}
+  .mod-card .role{color:var(--muted); font-size:13.5px; margin-bottom:12px;}
+  .mod-card ul{margin:0; padding-left:18px; font-size:13.5px; color:var(--text);}
+  .mod-card li{margin-bottom:5px;}
+  .mod-card li code{font-family:'IBM Plex Mono'; font-size:12.5px; color:var(--accent);}
+
+  /* ---------- PERFORMANCE ---------- */
+  .perf-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:32px; align-items:start;}
+  @media (max-width:900px){ .perf-grid{grid-template-columns:1fr;} }
+  .bars{display:flex; flex-direction:column; gap:16px;}
+  .bar-row{display:grid; grid-template-columns:96px 1fr 70px; align-items:center; gap:12px;}
+  .bar-row .lab{font-family:'IBM Plex Mono'; font-size:12.5px; color:var(--muted);}
+  .bar-track{height:14px; border-radius:7px; background:var(--panel-2); overflow:hidden; border:1px solid var(--border);}
+  .bar-fill{height:100%; border-radius:7px 0 0 7px;}
+  .bar-row .val{font-family:'IBM Plex Mono'; font-size:12.5px; text-align:right; color:var(--text);}
+  .callout{
+    border:1px solid var(--border); border-left:3px solid var(--accent-2);
+    background:var(--panel); border-radius:0 10px 10px 0; padding:16px 18px; margin-top:24px;
+    font-size:14px; color:var(--muted);
+  }
+  .callout b{color:var(--text);}
+  table.eff{width:100%; border-collapse:collapse; font-size:13.5px;}
+  table.eff th,table.eff td{padding:10px 8px; text-align:left; border-bottom:1px solid var(--border);}
+  table.eff th{color:var(--muted); font-family:'IBM Plex Mono'; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:400;}
+  table.eff td.mono{font-family:'IBM Plex Mono';}
+
+  /* ---------- SCREENSHOTS ---------- */
+  .shot-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media (max-width:800px){ .shot-grid{grid-template-columns:1fr;} }
+  .shot{
+    aspect-ratio:16/10; border-radius:10px;
+    border:1.5px dashed #36456280;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px; color:var(--muted); font-size:13px; background:var(--panel);
+  }
+  .shot svg{width:26px; height:26px; opacity:.6;}
+
+  /* ---------- LINK CTA ---------- */
+  .link-card{
+    border:1px solid var(--border); background:var(--panel);
+    border-radius:var(--radius); padding:40px; text-align:center;
+  }
+  .link-box{
+    margin:20px auto 0; max-width:520px;
+    border:1.5px dashed #36456280; border-radius:10px;
+    padding:16px; font-family:'IBM Plex Mono'; font-size:13.5px; color:var(--muted);
+    background:var(--panel-2);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{margin-top:110px; border-top:1px solid var(--border); padding:34px 0 50px;}
+  .foot-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
+  .foot-row .left{font-size:13px; color:var(--muted);}
+  .foot-row .right{font-family:'IBM Plex Mono'; font-size:12px; color:var(--muted); display:flex; gap:16px;}
+
+  section + section{margin-top:10px;}
+  .section:last-of-type{padding-bottom:20px;}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <nav class="nav wrap" style="padding-left:0; padding-right:0;">
+    <div class="brand"><span class="dot"></span> dijkstra<span class="mono" style="color:var(--muted)">.path</span></div>
+    <div class="navlinks">
+      <a href="#overview">Overview</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#stack">Stack</a>
+      <a href="#performance">Performance</a>
+      <a href="#screenshots">Screenshots</a>
+    </div>
+    <a class="btn btn-primary" href="https://web-based-shortest-path-analysis-sy-six.vercel.app/" target="_blank" rel="noreferrer">Live demo →</a>
+  </nav>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">// system design case study</p>
+      <h1>Finding the shortest path,<br><span>at scale.</span></h1>
+      <p class="lead">A database-backed implementation of Dijkstra's algorithm spanning a Python engine, a native C++/OpenMP solver, a FastAPI service layer, and a React dashboard — built to compute, validate, and benchmark shortest paths across a 5,000-node graph.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#link">View the project</a>
+        <a class="btn btn-ghost" href="#architecture">Read the build →</a>
+      </div>
+      <div class="stat-row">
+        <div class="stat-chip"><b>5,000</b> nodes</div>
+        <div class="stat-chip"><b>17,519</b> edges</div>
+        <div class="stat-chip">O((V+E) <b>log V</b>)</div>
+        <div class="stat-chip"><b>5</b> REST endpoints</div>
+        <div class="stat-chip"><b>2</b> solver engines</div>
+      </div>
+    </div>
+
+    <div class="graph-card">
+      <div class="cap">
+        <span>sample_graph.svg — 14 nodes</span>
+        <span class="legend"><span><i class="l-visited"></i>visited</span><span><i class="l-path"></i>shortest path</span></span>
+      </div>
+      <svg id="graphSvg" viewBox="0 0 600 380" xmlns="http://www.w3.org/2000/svg">
+        <defs></defs>
+        <!-- edges (drawn first, beneath nodes) -->
+        <g id="edgesLayer"></g>
+        <!-- path overlay -->
+        <g id="pathLayer"></g>
+        <!-- weight labels -->
+        <g id="weightsLayer"></g>
+        <!-- nodes -->
+        <g id="nodesLayer"></g>
+        <!-- rings -->
+        <g id="ringsLayer"></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <!-- ===================== OVERVIEW ===================== -->
+  <section class="section" id="overview">
+    <div class="section-head"><div class="node-id">01</div><div class="edge-rule"></div><h2>Overview</h2></div>
+    <p style="color:var(--muted); max-width:760px; margin-bottom:32px;">The system was built to do more than return a number. It persists a realistic graph in SQLite, computes shortest paths through two genuinely different execution strategies, validates every result against the underlying edge weights, and ships the whole thing behind an API and a visual frontend — so the algorithm's behaviour, not just its output, can be inspected.</p>
+    <div class="feat-grid">
+      <div class="feat">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4"/></svg>
+        <h3>Persistent graph database</h3>
+        <p>5,000 nodes and tens of thousands of weighted edges stored in SQLite, with a dedicated table for caching computed paths.</p>
+      </div>
+      <div class="feat">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg>
+        <h3>Two solver engines</h3>
+        <p>A sequential/parallel Python implementation alongside a native C++ solver that parallelises relaxation with OpenMP.</p>
+      </div>
+      <div class="feat">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        <h3>Built-in benchmarking</h3>
+        <p>A full benchmark suite measures every configuration and exports human-readable and CSV reports automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ARCHITECTURE ===================== -->
+  <section class="section" id="architecture">
+    <div class="section-head"><div class="node-id">02</div><div class="edge-rule"></div><h2>Architecture</h2></div>
+    <p style="color:var(--muted); max-width:760px; margin-bottom:36px;">Two routes lead from the same algorithm layer to the same result — one through the Python interpreter, one through compiled, multi-threaded C++. The interface and database don't know which route was taken.</p>
+
+    <div class="arch-stack">
+      <div class="arch-band"><span>Interface — main.py console / api.py (FastAPI)</span><span class="lbl">entry points</span></div>
+      <div class="arch-connector"></div>
+      <div class="arch-fork">
+        <div class="arch-band"><span>dijkstra.py<br><span class="lbl" style="display:block; margin-top:4px;">sequential + simulated parallel</span></span></div>
+        <div class="arch-band alt"><span>dijkstra_openmp.cpp<br><span class="lbl" style="display:block; margin-top:4px;">native OpenMP parallel</span></span></div>
+      </div>
+      <div class="arch-connector"></div>
+      <div class="arch-band"><span>database.py — graph load, path cache, statistics</span><span class="lbl">persistence</span></div>
+      <div class="arch-connector"></div>
+      <div class="arch-band"><span>SQLite — graph_data.db</span><span class="lbl">nodes · edges · paths</span></div>
+      <div class="arch-connector"></div>
+      <div class="arch-band"><span>performance.py — benchmark, report, CSV export</span><span class="lbl">analysis</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== TECH STACK ===================== -->
+  <section class="section" id="stack">
+    <div class="section-head"><div class="node-id">03</div><div class="edge-rule"></div><h2>Technology stack</h2></div>
+    <div class="stack-groups">
+      <div class="stack-group">
+        <h4>Algorithm</h4>
+        <div class="chip">Python · heapq</div><div class="chip">C++17</div><div class="chip">OpenMP</div>
+      </div>
+      <div class="stack-group">
+        <h4>Backend</h4>
+        <div class="chip">FastAPI</div><div class="chip">Uvicorn</div><div class="chip">Pydantic</div><div class="chip">SQLite3</div>
+      </div>
+      <div class="stack-group">
+        <h4>Frontend</h4>
+        <div class="chip">React 18</div><div class="chip">TypeScript</div><div class="chip">Vite</div><div class="chip">vis-network</div>
+      </div>
+      <div class="stack-group">
+        <h4>Tooling</h4>
+        <div class="chip">g++ / MSVC</div><div class="chip">npm</div><div class="chip">CSV export</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MODULES ===================== -->
+  <section class="section" id="modules">
+    <div class="section-head"><div class="node-id">04</div><div class="edge-rule"></div><h2>Module breakdown</h2></div>
+    <div class="mod-grid">
+      <div class="mod-card">
+        <div class="fname">database.py</div>
+        <div class="role">Graph persistence and retrieval</div>
+        <ul><li><code>generate_sample_data()</code> builds the 5,000-node graph</li><li><code>get_graph_as_dict()</code> loads it as an adjacency list</li><li><code>save_path_result()</code> caches computed paths</li></ul>
+      </div>
+      <div class="mod-card">
+        <div class="fname">dijkstra.py</div>
+        <div class="role">Sequential and parallel Python solvers</div>
+        <ul><li><code>dijkstra_sequential()</code> priority-queue baseline</li><li><code>dijkstra_parallel()</code> multi-threaded variant</li><li><code>validate_path()</code> checks results against edge weights</li></ul>
+      </div>
+      <div class="mod-card">
+        <div class="fname">dijkstra_openmp.cpp</div>
+        <div class="role">Native multi-core solver</div>
+        <ul><li>Reads the SQLite graph directly</li><li>Parallelises neighbour relaxation with OpenMP pragmas</li><li>Compiled via <code>build_openmp.sh</code> / <code>.bat</code></li></ul>
+      </div>
+      <div class="mod-card">
+        <div class="fname">performance.py</div>
+        <div class="role">Benchmarking and reporting</div>
+        <ul><li><code>run_full_benchmark()</code> across thread configurations</li><li><code>generate_performance_report()</code> writes a .txt summary</li><li><code>export_results_csv()</code> for external analysis</li></ul>
+      </div>
+      <div class="mod-card">
+        <div class="fname">api.py</div>
+        <div class="role">REST service layer</div>
+        <ul><li><code>/setup</code> · <code>/stats</code> · <code>/shortest-path</code></li><li><code>/benchmark</code> · <code>/health</code></li><li>Built on FastAPI + Uvicorn</li></ul>
+      </div>
+      <div class="mod-card">
+        <div class="fname">frontend/App.tsx</div>
+        <div class="role">Interactive dashboard</div>
+        <ul><li>Triggers setup and path queries against the API</li><li>Renders results with <code>vis-network</code></li><li>Built with React 18 + Vite</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PERFORMANCE ===================== -->
+  <section class="section" id="performance">
+    <div class="section-head"><div class="node-id">05</div><div class="edge-rule"></div><h2>Performance benchmark</h2></div>
+    <p style="color:var(--muted); max-width:760px; margin-bottom:30px;">20 randomised source/destination pairs were run against each configuration on the 5,000-node, 17,519-edge graph.</p>
+    <div class="perf-grid">
+      <div>
+        <div class="bars">
+          <div class="bar-row">
+            <span class="lab">Sequential</span>
+            <div class="bar-track"><div class="bar-fill" style="width:7.7%; background:var(--accent-2);"></div></div>
+            <span class="val">15.8 ms</span>
+          </div>
+          <div class="bar-row">
+            <span class="lab">Parallel · 1T</span>
+            <div class="bar-track"><div class="bar-fill" style="width:21.5%; background:#5b7fa6;"></div></div>
+            <span class="val">43.9 ms</span>
+          </div>
+          <div class="bar-row">
+            <span class="lab">Parallel · 2T</span>
+            <div class="bar-track"><div class="bar-fill" style="width:46.8%; background:#5b7fa6;"></div></div>
+            <span class="val">95.8 ms</span>
+          </div>
+          <div class="bar-row">
+            <span class="lab">Parallel · 4T</span>
+            <div class="bar-track"><div class="bar-fill" style="width:100%; background:#5b7fa6;"></div></div>
+            <span class="val">204.5 ms</span>
+          </div>
+        </div>
+        <p style="font-family:'IBM Plex Mono'; font-size:11.5px; color:var(--muted); margin-top:10px;">average execution time per query, lower is faster</p>
+        <div class="callout">
+          <b>Why parallel is slower here:</b> Python's Global Interpreter Lock prevents true concurrent bytecode execution, so thread/process management overhead outweighs any benefit at this graph size. The native <span class="mono">dijkstra_openmp.cpp</span> solver exists precisely to sidestep this limitation.
+        </div>
+      </div>
+      <div>
+        <table class="eff">
+          <thead><tr><th>Configuration</th><th>Speedup</th><th>Efficiency</th><th>Success</th></tr></thead>
+          <tbody>
+            <tr><td>Parallel · 1T</td><td class="mono">0.36×</td><td class="mono">35.91%</td><td class="mono">18/20</td></tr>
+            <tr><td>Parallel · 2T</td><td class="mono">0.16×</td><td class="mono">8.23%</td><td class="mono">20/20</td></tr>
+            <tr><td>Parallel · 4T</td><td class="mono">0.08×</td><td class="mono">1.93%</td><td class="mono">19/20</td></tr>
+          </tbody>
+        </table>
+        <div class="callout" style="margin-top:24px;">
+          <b>Takeaway:</b> for graphs of this size, the sequential implementation is the practical default. Parallel execution is reserved for the native OpenMP path or substantially larger workloads.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SCREENSHOTS ===================== -->
+  <section class="section" id="screenshots">
+    <div class="section-head"><div class="node-id">06</div><div class="edge-rule"></div><h2>Screenshots</h2></div>
+    <div class="shot-grid">
+      <div class="shot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="M3 16l5-4 4 3 5-5 4 4"/></svg>Add screenshot — frontend dashboard</div>
+      <div class="shot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="M3 16l5-4 4 3 5-5 4 4"/></svg>Add screenshot — shortest path result</div>
+      <div class="shot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="M3 16l5-4 4 3 5-5 4 4"/></svg>Add screenshot — benchmark output</div>
+    </div>
+  </section>
+
+  <!-- ===================== LINK ===================== -->
+  <section class="section" id="link">
+    <div class="section-head"><div class="node-id">07</div><div class="edge-rule"></div><h2>Project link</h2></div>
+    <div class="link-card">
+      <h3 style="font-size:20px; margin-bottom:8px;">Explore the live demo</h3>
+      <p style="color:var(--muted); margin:0;">Visit the frontend deployed on Vercel and review the source repository for implementation details.</p>
+      <div class="link-box"><a href="https://web-based-shortest-path-analysis-sy-six.vercel.app/" target="_blank" rel="noreferrer" style="color:var(--text); text-decoration:none;">https://web-based-shortest-path-analysis-sy-six.vercel.app/</a></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap foot-row">
+    <div class="left">Dijkstra Shortest-Path System — built by <strong style="color:var(--text);">ATA</strong> (Advanced Technical Architecture)</div>
+    <div class="right"><span>O((V+E) log V)</span><span>SQLite</span><span>FastAPI</span><span>React</span></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var nodes = [
+    {id:'A', x:40,  y:300}, {id:'B', x:120, y:120}, {id:'C', x:120, y:300},
+    {id:'D', x:200, y:60},  {id:'E', x:210, y:200}, {id:'F', x:210, y:340},
+    {id:'G', x:300, y:100}, {id:'H', x:300, y:260}, {id:'I', x:380, y:40},
+    {id:'J', x:380, y:180}, {id:'K', x:380, y:320}, {id:'L', x:460, y:120},
+    {id:'M', x:460, y:260}, {id:'N', x:540, y:190}
+  ];
+  var edges = [
+    ['A','B',4],['A','C',2],['B','D',5],['B','E',3],['C','E',4],['C','F',6],
+    ['D','G',2],['E','G',4],['E','H',5],['F','H',3],['G','I',3],['G','J',6],
+    ['H','J',2],['H','K',4],['I','L',4],['J','L',3],['J','M',5],['K','M',2],
+    ['L','N',3],['M','N',4]
+  ];
+  var pathIds = ['A','C','E','H','J','L','N'];
+  var pathSet = new Set(pathIds);
+  var byId = {}; nodes.forEach(function(n){ byId[n.id]=n; });
+
+  var edgesLayer = document.getElementById('edgesLayer');
+  var weightsLayer = document.getElementById('weightsLayer');
+  var nodesLayer = document.getElementById('nodesLayer');
+  var ringsLayer = document.getElementById('ringsLayer');
+  var pathLayer = document.getElementById('pathLayer');
+  var svgns = 'http://www.w3.org/2000/svg';
+
+  function el(tag, attrs){
+    var e = document.createElementNS(svgns, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  edges.forEach(function(ed){
+    var a = byId[ed[0]], b = byId[ed[1]];
+    edgesLayer.appendChild(el('line', {x1:a.x,y1:a.y,x2:b.x,y2:b.y, class:'edge'}));
+    var mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+    weightsLayer.appendChild(el('circle', {cx:mx, cy:my, r:8, class:'weight-bg'}));
+    var t = el('text', {x:mx, y:my+0.5, class:'weight-txt'});
+    t.textContent = ed[2];
+    weightsLayer.appendChild(t);
+  });
+
+  // path overlay edges (drawn with draw-on animation)
+  var pathSegs = [];
+  for (var i=0; i<pathIds.length-1; i++){
+    pathSegs.push([pathIds[i], pathIds[i+1]]);
+  }
+  pathSegs.forEach(function(seg, idx){
+    var a = byId[seg[0]], b = byId[seg[1]];
+    var line = el('line', {x1:a.x,y1:a.y,x2:b.x,y2:b.y, class:'path-edge'});
+    pathLayer.appendChild(line);
+    var len = Math.hypot(b.x-a.x, b.y-a.y);
+    line.style.strokeDasharray = len;
+    line.style.strokeDashoffset = len;
+    line.style.transition = 'none';
+    var delay = 3.6 + idx*0.32; // seconds into the 7s loop
+    line.style.animation = 'drawSeg 7s ease-in-out ' + delay + 's infinite';
+    var styleTag = document.createElement('style');
+    styleTag.textContent = '@keyframes drawSeg{0%{stroke-width:0;stroke-dashoffset:'+len+';}2%{stroke-width:2.4;}10%,46%{stroke-dashoffset:0;stroke-width:2.4;}55%,100%{stroke-dashoffset:0;stroke-width:0;}}';
+    document.head.appendChild(styleTag);
+  });
+
+  nodes.forEach(function(n, idx){
+    var g = el('g', {class: pathSet.has(n.id) ? 'path-node' : ''});
+    var c = el('circle', {cx:n.x, cy:n.y, r:14, class:'node-circle'});
+    var t = el('text', {x:n.x, y:n.y+0.5, class:'node-txt'});
+    t.textContent = n.id;
+    g.appendChild(c); g.appendChild(t);
+    nodesLayer.appendChild(g);
+
+    var ring = el('circle', {cx:n.x, cy:n.y, r:14, class:'ring'});
+    ring.style.animationDelay = (idx*0.16) + 's';
+    ringsLayer.appendChild(ring);
+  });
+})();
+</script>
+
+</body>
+</html>
